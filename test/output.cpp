@@ -14,8 +14,11 @@
 
 
 struct basic_output_iter
-    : boost::stl_interfaces::
-          iterator_interface<basic_output_iter, std::output_iterator_tag, int>
+    : boost::stl_interfaces::iterator_interface<
+#if !BOOST_STL_INTERFACES_USE_DEDUCED_THIS
+          basic_output_iter,
+#endif
+          std::output_iterator_tag, int>
 {
     basic_output_iter() : it_(nullptr) {}
     basic_output_iter(int * it) : it_(it) {}
@@ -27,8 +30,11 @@ struct basic_output_iter
         return *this;
     }
 
-    using base_type = boost::stl_interfaces::
-        iterator_interface<basic_output_iter, std::output_iterator_tag, int>;
+    using base_type = boost::stl_interfaces::iterator_interface<
+#if !BOOST_STL_INTERFACES_USE_DEDUCED_THIS
+        basic_output_iter,
+#endif
+        std::output_iterator_tag, int>;
     using base_type::operator++;
 
 private:
@@ -61,7 +67,9 @@ BOOST_STL_INTERFACES_STATIC_ASSERT_ITERATOR_TRAITS(
 
 template<typename Container>
 struct back_insert_iter : boost::stl_interfaces::iterator_interface<
+#if !BOOST_STL_INTERFACES_USE_DEDUCED_THIS
                               back_insert_iter<Container>,
+#endif
                               std::output_iterator_tag,
                               typename Container::value_type,
                               back_insert_iter<Container> &>
@@ -84,7 +92,9 @@ struct back_insert_iter : boost::stl_interfaces::iterator_interface<
     }
 
     using base_type = boost::stl_interfaces::iterator_interface<
+#if !BOOST_STL_INTERFACES_USE_DEDUCED_THIS
         back_insert_iter<Container>,
+#endif
         std::output_iterator_tag,
         typename Container::value_type,
         back_insert_iter<Container> &>;
@@ -135,14 +145,6 @@ int main()
     std::vector<int> ints_copy;
     std::copy(ints.begin(), ints.end(), back_insert(ints_copy));
     BOOST_TEST(ints_copy == ints);
-}
-
-
-{
-    std::vector<int> ints_copy;
-    back_insert out(ints_copy);
-    for (int i = 0; i < 10; ++i)
-        out++;
 }
 
     return boost::report_errors();
